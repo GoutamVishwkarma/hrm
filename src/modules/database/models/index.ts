@@ -5,3 +5,4 @@ export const getMongooseFeature = () => {
     return MongooseModule.forFeature([{ name: 'User', schema: UserModel }]);
 };
 export * from './user.model';
+export * from './models.module';

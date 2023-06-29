@@ -1,8 +1,7 @@
 import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
 import { MongooseModule } from '@nestjs/mongoose';
-import { getMongooseFeature } from 'src/models';
-import { ModelsModule } from 'src/models/models.module';
+import { getMongooseFeature , ModelsModule} from './models';
 
 @Module({
     imports: [

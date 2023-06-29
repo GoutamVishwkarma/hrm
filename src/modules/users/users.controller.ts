@@ -6,17 +6,19 @@ import {
   Patch,
   Param,
   Delete,
+  Logger,
+  Query,
 } from '@nestjs/common';
 import { UsersService } from './users.service';
-import { User } from 'src/models/user.model';
-import { ApiBody } from '@nestjs/swagger';
+import { User } from 'src/modules/database/models';
+import { ApiTags } from '@nestjs/swagger';
 
 @Controller('users')
+@ApiTags('users')
 export class UsersController {
   constructor(private readonly usersService: UsersService) {}
 
   @Post()
-  @ApiBody({ type: [User] })
   create(@Body() createUserDto: User) {
     return this.usersService.create(createUserDto);
   }
@@ -27,7 +29,8 @@ export class UsersController {
   }
 
   @Get(':id')
-  findOne(@Param('id') id: string) {
+  findOne(@Param('id') id: string , @Query('id') id2?: string) {
+    Logger.log(id2);
     return this.usersService.findOne(id);
   }
 

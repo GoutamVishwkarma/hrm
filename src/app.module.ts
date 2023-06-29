@@ -1,10 +1,10 @@
 import { Module } from '@nestjs/common';
-import { AppController } from './app.controller';
-import { UsersModule } from './users/users.module';
 import { DevtoolsModule } from '@nestjs/devtools-integration';
-import { DatabaseModule } from './database/database.module';
 import { ConfigModule } from '@nestjs/config';
-import { AdminModule } from './admin/admin.module';
+import { AppController } from 'src/app.controller';
+import { DatabaseModule } from 'src/modules/database';
+import { AuthModule } from 'src/modules/auth';
+import { UsersModule } from 'src/modules/users';
 
 @Module({
   imports: [  DevtoolsModule.register({
@@ -16,7 +16,7 @@ import { AdminModule } from './admin/admin.module';
   }),
   UsersModule,
   DatabaseModule,
-  AdminModule],
+  AuthModule],
   controllers: [AppController],
   providers: [],
   exports: [],
