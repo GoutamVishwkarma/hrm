@@ -1,14 +1,13 @@
-import { MiddlewareConsumer, Module, NestModule } from '@nestjs/common';
+import { AllExceptionsFilter } from './helpers/filters/exception.filter';
+import {  Module, } from '@nestjs/common';
 import { DevtoolsModule } from '@nestjs/devtools-integration';
 import { ConfigModule } from '@nestjs/config';
-import { APP_FILTER } from '@nestjs/core';
+import { APP_FILTER, APP_INTERCEPTOR } from '@nestjs/core';
 import { AppController } from 'src/app.controller';
 import { DatabaseModule } from 'src/modules/database';
 import { AuthModule } from 'src/modules/auth';
 import { UsersModule } from 'src/modules/users';
-import { LoggerMiddleware } from 'src/helpers';
-import { AllExceptionsFilter } from 'src/helpers/filters';
-
+import { TransformResponseInterceptor } from './helpers/interceptor';
 @Module({
   imports: [  DevtoolsModule.register({
     http: process.env.NODE_ENV !== 'production',
@@ -21,9 +20,13 @@ import { AllExceptionsFilter } from 'src/helpers/filters';
   DatabaseModule,
   AuthModule],
   controllers: [AppController],
-  providers: [ {
-    provide: APP_FILTER,
-    useClass: AllExceptionsFilter,
+  providers: [{
+    provide:APP_FILTER,
+    useClass:AllExceptionsFilter,
+
+  } ,{
+    provide: APP_INTERCEPTOR,
+    useClass: TransformResponseInterceptor,
   }],
   exports: [],
 })

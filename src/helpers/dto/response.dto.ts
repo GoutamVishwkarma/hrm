@@ -13,3 +13,11 @@ export class ApiResponseDto {
     }
   }
   
+  export interface ApiResponse<T> {
+    message: string | object;
+    error?: string;
+    status: number;
+    data?: T;
+    timestamp: string;
+  }
+  

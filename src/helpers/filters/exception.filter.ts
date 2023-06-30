@@ -11,35 +11,30 @@ import { ValidationError } from 'class-validator';
   
   @Catch()
   export class AllExceptionsFilter implements ExceptionFilter {
+    private readonly logger : Logger= new Logger(AllExceptionsFilter.name);
     catch(exception: any, host: ArgumentsHost) {
       const ctx = host.switchToHttp();
       const response = ctx.getResponse();
- 
       let status = exception.getStatus();
       let message = exception.getResponse() as string;
-  
-      if (exception.getResponse() instanceof Array) {
-        const validationErrors = exception.getResponse() as ValidationError[];
+      
+      this.logger.error(typeof exception);
+      this.logger.error(exception.getResponse());
+      if (exception.getResponse() && exception.getResponse().message instanceof Array ) {
+        const validationErrors = exception.getResponse().message as string[];
+        this.logger.error(validationErrors);
         message = this.getValidationErrorMessage(validationErrors);
         status = HttpStatus.BAD_REQUEST;
       }
-  
-  
-      const error = exception instanceof Error ? (exception.message || exception.toString()) : undefined;
-
-
-  
+      if (exception instanceof HttpException) 
+      this.logger.error("http",exception.getResponse());
+      const error = (exception.getResponse() && exception.getResponse().error) ? (exception.error || exception.toString()) : undefined;
       const apiResponse = new ApiResponseDto(message, status, undefined, error);
-
+      this.logger.error({apiResponse});
       response.status(status).json(apiResponse);
     }
-    private getValidationErrorMessage(errors: ValidationError[]): string {
-        const errorMessages = errors.map((error) => {
-          const constraints = Object.values(error.constraints);
-          return constraints.join(', ');
-        });
-    
-        return errorMessages.join(', ');
+    private getValidationErrorMessage(errors: string[]): string {
+        return errors.join(', ');
       }
   }
   
