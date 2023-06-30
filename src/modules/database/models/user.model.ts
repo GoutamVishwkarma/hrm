@@ -9,9 +9,9 @@ export type UserDocument = HydratedDocument<User>;
 export class User  {
   
   @Prop({required: true,unique: true})
-  
   @ApiProperty()
   userId : string;
+
   @Prop()
   @ApiProperty()
   name: string;
@@ -20,6 +20,11 @@ export class User  {
   @IsEmail()
   @ApiProperty({type: String,format: 'email'})
   email: string;
+  
+  @Prop()
+  @IsNotEmpty()
+  @ApiProperty({type: String,format: 'password'})
+  password: string;
 }
 
 export const UserModel = SchemaFactory.createForClass(User);
