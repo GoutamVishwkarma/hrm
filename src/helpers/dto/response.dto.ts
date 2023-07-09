@@ -1,13 +1,14 @@
 export class ApiResponseDto {
     message: string | object;
     error?: string;
-    status: number;
+    statusCode: number;
     data?: any;
+    path?: string;
     timestamp = new Date().toISOString();
   
-    constructor(message: string | object , status: number, data?: any, error?: string) {
+    constructor(message: string | object , statusCode: number, data?: any, error?: string) {
       this.message = message;
-      this.status = status;
+      this.statusCode = statusCode;
       this.data = data;
       this.error = error;
     }
@@ -16,8 +17,9 @@ export class ApiResponseDto {
   export interface ApiResponse<T> {
     message: string | object;
     error?: string;
-    status: number;
+    statusCode: number;
     data?: T;
+    path?: string;
     timestamp: string;
   }
   

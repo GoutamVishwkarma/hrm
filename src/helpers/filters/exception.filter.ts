@@ -1,39 +1,79 @@
-import {
-    ExceptionFilter,
-    Catch,
-    ArgumentsHost,
-    HttpException,
-    Logger,
-    HttpStatus
-  } from '@nestjs/common';
-import { ApiResponseDto } from '../dto';
+// import {
+//     ExceptionFilter,
+//     Catch,
+//     ArgumentsHost,
+//     HttpException,
+//     Logger,
+//     HttpStatus
+//   } from '@nestjs/common';
+// import { ApiResponseDto } from '../dto';
   
-  @Catch()
-  export class AllExceptionsFilter implements ExceptionFilter {
-    private readonly logger : Logger= new Logger(AllExceptionsFilter.name);
-    catch(exception: any, host: ArgumentsHost) {
-      const ctx = host.switchToHttp();
-      const response = ctx.getResponse();
-      let status = exception.getStatus();
-      let message = exception.getResponse() as string;
+//   @Catch()
+//   export class AllExceptionsFilter implements ExceptionFilter {
+//     private readonly logger : Logger= new Logger(AllExceptionsFilter.name);
+//     catch(exception: any, host: ArgumentsHost) {
+//       const ctx = host.switchToHttp();
+//       const response = ctx.getResponse();
+//       let status = exception.getStatus();
+//       let message = exception.getResponse() as string;
        
-      this.logger.error(typeof exception);
-      this.logger.error(exception.getResponse());
-      if (exception.getResponse() && exception.getResponse().message instanceof Array ) {
-        const validationErrors = exception.getResponse().message as string[];
-        this.logger.error(validationErrors);
-        message = this.getValidationErrorMessage(validationErrors);
-        status = HttpStatus.BAD_REQUEST;
-      }
-      if (exception instanceof HttpException) 
-      this.logger.error("http",exception.getResponse());
-      const error = (exception.getResponse() && exception.getResponse().error) ? (exception.error || exception.toString()) : undefined;
-      const apiResponse = new ApiResponseDto(message, status, undefined, error);
-      this.logger.error({apiResponse});
-      response.status(status).json(apiResponse);
+//       this.logger.error(typeof exception);
+//       this.logger.error(exception.getResponse());
+//       if (exception.getResponse() && exception.getResponse().message instanceof Array ) {
+//         const validationErrors = exception.getResponse().message as string[];
+//         this.logger.error(validationErrors);
+//         message = this.getValidationErrorMessage(validationErrors);
+//         status = HttpStatus.BAD_REQUEST;
+//       }
+//       if (exception instanceof HttpException) 
+//       this.logger.error("http");
+//       const error = (exception.getResponse() && exception.getResponse().error) ? (exception.error || exception.toString()) : undefined;
+//       const apiResponse = new ApiResponseDto(message, status, undefined, error);
+//       this.logger.error({apiResponse});
+//       response.status(status).json(apiResponse);
+//     }
+//     private getValidationErrorMessage(errors: string[]): string {
+//         return errors.join(', ');
+//       }
+//   }
+
+import { ExceptionFilter, Catch, ArgumentsHost, HttpException, HttpStatus, Logger } from '@nestjs/common';
+import { Request, Response } from 'express';
+import { ApiResponseDto } from '../dto';
+
+@Catch()
+export class AllExceptionsFilter implements ExceptionFilter {
+  private logger = new Logger(AllExceptionsFilter.name);
+  catch(exception: any, host: ArgumentsHost) {
+    const ctx = host.switchToHttp();
+    const response = ctx.getResponse<Response>();
+    const request = ctx.getRequest<Request>();
+
+    let status: number;
+    let message: string | object;
+    this.logger.error(exception);
+    this.logger.error({exception});
+    
+    if (exception instanceof HttpException) {
+      status = exception.getStatus();
+      let response: any = exception.getResponse();
+      if(response.message instanceof Array)
+      message = response.message.join(', ');
+      else
+      message = response.message as string;
+    }else {
+      status = HttpStatus.INTERNAL_SERVER_ERROR;
+      message = exception.message || 'Internal server error';
     }
-    private getValidationErrorMessage(errors: string[]): string {
-        return errors.join(', ');
-      }
+    const errorResponse = {
+      statusCode: status,
+      message,
+      timestamp: new Date().toISOString(),
+      path: request.url,
+    } as ApiResponseDto;
+    
+    response.status(status).json(errorResponse);
   }
+}
+
   

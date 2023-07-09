@@ -8,7 +8,7 @@ export class TransformResponseInterceptor<T> implements NestInterceptor<T, ApiRe
   intercept(context: ExecutionContext, next: CallHandler): Observable<ApiResponse<T>> {
     return next.handle().pipe(
       map(data => ({
-        status: 200,
+        statusCode: 200,
         message: 'Request successful',
         data,
         timestamp: new Date().toISOString()

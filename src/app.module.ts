@@ -20,14 +20,7 @@ import { TransformResponseInterceptor } from './helpers/interceptor';
   DatabaseModule,
   AuthModule],
   controllers: [AppController],
-  providers: [{
-    provide:APP_FILTER,
-    useClass:AllExceptionsFilter,
-
-  } ,{
-    provide: APP_INTERCEPTOR,
-    useClass: TransformResponseInterceptor,
-  }],
+  providers: [],
   exports: [],
 })
 export class AppModule {}
