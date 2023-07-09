@@ -9,6 +9,7 @@ async function bootstrap() {
   const app = await NestFactory.create(AppModule, {
     snapshot: true,  logger: ['error', 'warn', 'debug', 'log'],
   });
+  app.setGlobalPrefix('api/v1');
   app.useGlobalPipes(new ValidationPipe());
   app.useGlobalFilters(new AllExceptionsFilter());
   app.useGlobalInterceptors(new TransformResponseInterceptor());

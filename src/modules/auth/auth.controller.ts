@@ -6,8 +6,8 @@ import {
   Post
 } from '@nestjs/common';
 import { AuthService } from './auth.service';
-import { AuthDto, AuthSignUpDto } from './dto';
-import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
+import { AuthDto } from './dto';
+import { ApiTags } from '@nestjs/swagger';
 import { User } from '../database/models';
 
 @Controller('auth')

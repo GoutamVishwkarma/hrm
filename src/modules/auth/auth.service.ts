@@ -3,11 +3,12 @@ import {
     Injectable,
     Logger,
   } from '@nestjs/common';
-  import { AuthDto, AuthSignUpDto } from './dto';
+  import { AuthDto } from './dto';
   import { UsersService } from '../users';
   import * as argon from 'argon2';
   import { JwtService } from '@nestjs/jwt';
   import { ConfigService } from '@nestjs/config';
+import { User } from '../database/models';
   
   @Injectable()
   export class AuthService {
@@ -17,7 +18,7 @@ import {
       private config: ConfigService,
     ) {}
   
-    async signup(dto: AuthSignUpDto) {
+    async signup(dto: User) {
       // generate the password hash
       const hash = await argon.hash(dto.password);
       // save the new user in the db
@@ -27,9 +28,10 @@ import {
             name: dto.name,
             email: dto.email,
             password: hash,
+            roles: dto.roles,
         } );
   
-        return this.signToken(user.userId, user.email);
+        return this.signToken(user.userId, user.email,user.roles.map(role=>role.name));
       } catch (error) {
         throw new ForbiddenException(error);
       }
@@ -54,16 +56,18 @@ import {
         throw new ForbiddenException(
           'Credentials incorrect',
         );
-      return this.signToken(user.userId, user.email);
+      return this.signToken(user.userId, user.email,user.roles.map(role=>role.name));
     }
   
     async signToken(
       userId: string,
       email: string,
+      roles: string[],
     ): Promise<{ access_token: string }> {
       const payload = {
         sub: userId,
         email,
+        roles,
       };
       const secret = this.config.get('JWT_SECRET');
   

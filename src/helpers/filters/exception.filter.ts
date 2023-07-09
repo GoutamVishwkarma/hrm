@@ -7,7 +7,6 @@ import {
     HttpStatus
   } from '@nestjs/common';
 import { ApiResponseDto } from '../dto';
-import { ValidationError } from 'class-validator';
   
   @Catch()
   export class AllExceptionsFilter implements ExceptionFilter {
@@ -17,7 +16,7 @@ import { ValidationError } from 'class-validator';
       const response = ctx.getResponse();
       let status = exception.getStatus();
       let message = exception.getResponse() as string;
-      
+       
       this.logger.error(typeof exception);
       this.logger.error(exception.getResponse());
       if (exception.getResponse() && exception.getResponse().message instanceof Array ) {

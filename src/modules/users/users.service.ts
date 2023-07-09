@@ -15,14 +15,14 @@ export class UsersService {
 
   async findAll(): Promise<User[]> {
     this.logger.log('findAll');
-    return this.userModel.find().exec();
+    return await this.userModel.find().exec();
   }
 
   async findOne(id: string): Promise<User> {
     return this.userModel.findOne({userId:id}).exec();
   }
   async findOneByEmail(email: string): Promise<User> {
-    return await this.userModel.findOne({email}).exec();
+    return await this.userModel.findOne({ email }).populate('roles').exec();
   }
 
   async update(id: string, user: User): Promise<User> {
